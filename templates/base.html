@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}JustBuyIt - Shop Smart{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="{% block body_class %}bg-gradient-to-br from-indigo-500 via-blue-200 to-green-800{% endblock %} min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <header class="bg-blue-600 text-white p-4 flex justify-between items-center">
+    <div class="text-xl font-bold">
+      <a href="/" class="hover:underline">JustBuyIt</a>
+    </div>
+    <div class="space-x-4 flex items-center">
+      {% if user.is_authenticated %}
+        <span>Welcome, {{ user.username }}</span>
+
+        {% if user.role == "supplier" %}
+          <a href="{% url 'add_product' %}" class="hover:underline">Add Product</a>
+          <a href="{% url 'bulk_upload' %}" class="hover:underline">Bulk Upload</a>
+        {% elif user.role == "buyer" %}
+          <a href="{% url 'view_cart' %}" class="hover:underline">🛒 Cart</a>
+          <a href="{% url 'wishlist' %}" class="hover:underline">❤️ Wishlist</a>
+        {% endif %}
+
+        <a href="{% url 'logout' %}" class="hover:underline">Logout</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="hover:underline">Login</a>
+        <a href="{% url 'register' %}" class="hover:underline">Register</a>
+      {% endif %}
+
+      <!-- 🌙 Dark Mode Toggle -->
+      <button onclick="toggleDarkMode()"
+              class="ml-4 bg-white text-black dark:bg-gray-800 dark:text-white px-3 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+        🌙 Toggle Dark
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-6 py-10 flex-grow">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white shadow-inner text-center py-4 text-gray-600 text-sm">
+    &copy; <script>document.write(new Date().getFullYear());</script> JustBuyIt. All rights reserved.
+  </footer>
+
+  <!-- Dark mode toggle logic -->
+  <script>
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+    }
+  </script>
+
+</body>
+</html>

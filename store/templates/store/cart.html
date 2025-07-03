@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block body_class %}min-h-screen bg-gradient-to-br from-indigo-500 via-blue-200 to-green-800{% endblock %}
+
+{% block title %}Your Cart | JustBuyIt{% endblock %}
+
+{% block content %}
+  <section class="max-w-5xl mx-auto bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-lg">
+    <h2 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">🛒 Your Cart</h2>
+
+    {% if cart_items %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded-xl shadow text-sm">
+          <thead>
+            <tr class="bg-gradient-to-r from-blue-200 via-indigo-100 to-purple-200 text-left text-gray-700">
+              <th class="px-4 py-3">Product</th>
+              <th class="px-4 py-3">Quantity</th>
+              <th class="px-4 py-3">Price</th>
+              <th class="px-4 py-3">Subtotal</th>
+              <th class="px-4 py-3 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart_items %}
+              <tr class="border-t hover:bg-gray-50 transition">
+                <td class="px-4 py-3 font-medium">{{ item.product.name }}</td>
+                <td class="px-4 py-3">{{ item.quantity }}</td>
+                <td class="px-4 py-3">₹{{ item.product.price }}</td>
+                <td class="px-4 py-3">₹{{ item.subtotal }}</td>
+                <td class="px-4 py-3 text-center">
+                  <a href="{% url 'remove_from_cart' item.product.id %}"
+                     class="text-red-600 font-semibold hover:underline hover:text-red-800 transition">
+                    ✖ Remove
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+            <tr class="bg-gray-100 font-bold border-t text-right">
+              <td colspan="3" class="px-4 py-3 text-right">Total:</td>
+              <td class="px-4 py-3">₹{{ total }}</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-6 text-center">
+        <a href="{% url 'product_list' %}"
+           class="inline-block bg-indigo-600 text-white px-6 py-2 rounded-full shadow hover:bg-indigo-700 transition">
+          Continue Shopping
+        </a>
+      </div>
+    {% else %}
+      <div class="text-center py-12 text-gray-700">
+        <p class="text-lg">Your cart is currently empty 😔</p>
+        <a href="{% url 'product_list' %}"
+           class="mt-4 inline-block bg-indigo-600 text-white px-5 py-2 rounded-full shadow hover:bg-indigo-700 transition">
+          🛍 Start Shopping
+        </a>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

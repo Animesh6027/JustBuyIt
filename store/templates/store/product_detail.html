@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow">
+    {% if product.image %}
+      <img src="{{ product.image.url }}" alt="{{ product.name }}"
+           class="w-full h-96 object-contain mb-4 rounded" />
+    {% endif %}
+
+    <h2 class="text-3xl font-bold mb-2">{{ product.name }}</h2>
+    <p class="text-green-600 text-xl font-semibold mb-4">₹{{ product.price }}</p>
+
+    <p class="mb-2 text-gray-700">
+      <strong>Category:</strong> {{ product.category.name }} →
+      {{ product.subcategory.name }}
+    </p>
+
+    <p class="text-gray-600 mb-6"><strong>Supplier:</strong> {{ product.supplier.username }}</p>
+
+    <p class="text-gray-800 leading-relaxed">{{ product.description }}</p>
+  </div>
+{% endblock %}

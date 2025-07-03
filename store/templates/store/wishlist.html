@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}My Wishlist{% endblock %}
+
+{% block content %}
+  <h2 class="text-2xl font-bold mb-4">My Wishlist</h2>
+
+  {% if wishlist_items %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for item in wishlist_items %}
+        <div class="bg-white p-4 rounded shadow">
+          {% if item.product.image %}
+            <img src="{{ item.product.image.url }}" class="h-48 w-full object-contain mb-2" />
+          {% endif %}
+          <h3 class="text-lg font-semibold">{{ item.product.name }}</h3>
+          <p class="text-green-600 font-bold">₹{{ item.product.price }}</p>
+          <a href="{% url 'remove_from_wishlist' item.product.id %}"
+             class="text-red-600 underline block mt-2">Remove</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>Your wishlist is empty.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_class %}min-h-screen bg-gradient-to-br from-green-400 via-blue-500 to-white{% endblock %}
+
+{% block title %}Home | JustBuyIt{% endblock %}
+
+{% block content %}
+    <!-- Hero Section with Gradient Background -->
+    <section class="bg-gradient-to-r from-indigo-100 via-blue-100 to-white py-10 rounded-3xl shadow-lg mx-6 mt-8">
+        <div class="flex flex-col-reverse md:flex-row items-center justify-between px-8 md:px-20">
+            <div class="md:w-1/2 text-center md:text-left">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 leading-snug">
+                    Where Shopping Meets<br><span class="text-indigo-600">Simplicity</span>
+                </h1>
+                <p class="text-base md:text-lg text-gray-600 mt-3">
+                    Discover top products, best deals, and smooth shopping experience at JustBuyIt.
+                </p>
+                <a href="{% url 'product_list' %}"
+                   class="mt-5 inline-block bg-indigo-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow hover:bg-indigo-700 transition">
+                    Shop Now
+                </a>
+            </div>
+
+            <div class="md:w-1/2">
+                <img src="/media/product_images/macbook.jpg" alt="Promo Laptop"
+                     class="rounded-2xl shadow-md w-[260px] md:w-[450px] max-h-[500px] object-cover mx-auto"/>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Featured Categories Section -->
+    <section class="bg-white rounded-2xl shadow-md py-8 px-6 mt-10 mx-auto max-w-6xl">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Featured Categories</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+            <div class="bg-gray-100 rounded-xl p-6 flex flex-col items-center hover:shadow-lg transition">
+                <img src="/media/product_images/smartphone.png" alt="Phones" class="w-16 mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Phones</h3>
+            </div>
+
+            <div class="bg-gray-100 rounded-xl p-6 flex flex-col items-center hover:shadow-lg transition">
+                <img src="/media/product_images/laptop-screen.png" alt="Laptops" class="w-16 mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Laptops</h3>
+            </div>
+
+            <div class="bg-gray-100 rounded-xl p-6 flex flex-col items-center hover:shadow-lg transition">
+                <img src="https://cdn-icons-png.flaticon.com/512/3145/3145765.png" alt="Books" class="w-16 mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Books</h3>
+            </div>
+
+            <div class="bg-gray-100 rounded-xl p-6 flex flex-col items-center hover:shadow-lg transition">
+                <img src="https://cdn-icons-png.flaticon.com/512/892/892458.png" alt="Clothing" class="w-16 mb-2">
+                <h3 class="text-lg font-semibold text-gray-700">Clothing</h3>
+            </div>
+
+        </div>
+    </section>
+{% endblock %}

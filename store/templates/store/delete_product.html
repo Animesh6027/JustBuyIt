@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Delete Product{% endblock %}
+
+{% block content %}
+  <h2 class="text-2xl font-bold text-red-600 mb-4">Delete Product</h2>
+
+  <p>Are you sure you want to delete <strong>{{ product.name }}</strong>?</p>
+
+  <form method="post" class="mt-4">
+    {% csrf_token %}
+    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded">Yes, Delete</button>
+    <a href="{% url 'supplier_dashboard' %}" class="ml-4 text-blue-600 underline">Cancel</a>
+  </form>
+{% endblock %}
