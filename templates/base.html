@@ -12,7 +12,10 @@
 <!-- Navbar -->
 <header class="bg-blue-600 text-white p-4 flex justify-between items-center">
     <div class="text-xl font-bold">
-        <a href="/" class="hover:underline">JustBuyIt</a>
+        <a href="/" class="flex items-center space-x-2">
+  <img src="/media/product_images/clothing-shop.gif" alt="JustBuyIt Logo" class="h-8 w-auto">
+  <span class="text-xl font-bold">JustBuyIt</span>
+</a>
     </div>
     <div class="space-x-4 flex items-center">
         {% if user.is_authenticated %}
