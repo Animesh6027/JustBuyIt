@@ -191,7 +191,7 @@ def bulk_upload(request):
         for row in reader:
             try:
                 category = Category.objects.get(name=row['category'])
-                subcategory = Subcategory.objects.get(name=row['subcategory'], category=category)
+                subcategory = SubCategory.objects.get(name=row['subcategory'], category=category)
                 Product.objects.create(
                     name=row['name'],
                     description=row['description'],
