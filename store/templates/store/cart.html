@@ -23,7 +23,13 @@
             {% for item in cart_items %}
               <tr class="border-t hover:bg-gray-50 transition">
                 <td class="px-4 py-3 font-medium">{{ item.product.name }}</td>
-                <td class="px-4 py-3">{{ item.quantity }}</td>
+                <td class="px-4 py-3">
+        <div class="flex items-center gap-2">
+          <a href="{% url 'decrease_cart_quantity' item.product.id %}" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">−</a>
+          <span class="font-semibold px-3">{{ item.quantity }}</span>
+          <a href="{% url 'increase_cart_quantity' item.product.id %}" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">+</a>
+        </div>
+      </td>
                 <td class="px-4 py-3">₹{{ item.product.price }}</td>
                 <td class="px-4 py-3">₹{{ item.subtotal }}</td>
                 <td class="px-4 py-3 text-center">

@@ -10,32 +10,50 @@
 <body class="{% block body_class %}bg-gradient-to-br from-indigo-500 via-blue-200 to-green-800{% endblock %} min-h-screen flex flex-col">
 
 <!-- Navbar -->
-<header class="bg-grey-200 text-black p-4 flex justify-between items-center">
+<header class="bg-white/90 text-black p-2 flex justify-between items-center shadow-md backdrop-blur">
     <div class="text-xl font-bold">
         <a href="/" class="flex items-center space-x-2">
-  <img src="/media/product_images/clothing-shop.gif" alt="JustBuyIt Logo" class="h-8 w-auto">
-  <span class="text-xl font-bold">JustBuyIt</span>
-</a>
+            <img src="/media/product_images/clothing-shop.gif" alt="JustBuyIt Logo" class="h-14 w-auto">
+            <span class="text-2xl font-extrabold text-indigo-700">JustBuyIt</span>
+        </a>
     </div>
-    <div class="space-x-4 flex items-center">
+
+    <div class="space-x-6 flex items-center text-sm font-medium">
         {% if user.is_authenticated %}
-            <span>Welcome, {{ user.username }}</span>
+            <span class="text-gray-800">Welcome, {{ user.username }}</span>
 
             {% if user.role == "supplier" %}
-                <a href="{% url 'add_product' %}" class="hover:underline">Add Product</a>
-                <a href="{% url 'bulk_upload' %}" class="hover:underline">Bulk Upload</a>
+                <a href="{% url 'add_product' %}" class="hover:text-indigo-700">Add Product</a>
+                <a href="{% url 'bulk_upload' %}" class="hover:text-indigo-700">Bulk Upload</a>
             {% elif user.role == "buyer" %}
-                <a href="{% url 'view_cart' %}" class="hover:underline">🛒 Cart</a>
-                <a href="{% url 'wishlist' %}" class="hover:underline">❤️ Wishlist</a>
+                <!-- Cart Icon with Badge -->
+                <a href="{% url 'view_cart' %}" class="relative flex flex-col items-center group">
+
+                    <span>Cart🛍️</span>
+                    {% if cart_count > 0 %}
+                        <span class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                            {{ cart_count }}
+                        </span>
+                    {% endif %}
+                </a>
+
+                <!-- Wishlist Icon with Badge -->
+                <a href="{% url 'wishlist' %}" class="relative flex flex-col items-center group">
+
+                    <span>Wishlist❤️</span>
+                    {% if wishlist_count > 0 %}
+                        <span class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                            {{ wishlist_count }}
+                        </span>
+                    {% endif %}
+                </a>
             {% endif %}
 
-            <a href="{% url 'logout' %}" class="hover:underline">Logout</a>
+            <a href="{% url 'logout' %}" class="hover:text-red-600">Logout</a>
         {% else %}
-            <a href="{% url 'login' %}" class="hover:underline">Login</a>
-            <a href="{% url 'register' %}" class="hover:underline">Register</a>
+            <a href="{% url 'login' %}" class="hover:text-indigo-700">Sign In</a>
+            <a href="{% url 'register' %}" class="hover:text-indigo-700">Sign Up</a>
         {% endif %}
-
-
     </div>
 </header>
 
@@ -45,18 +63,11 @@
 </main>
 
 <!-- Footer -->
-<footer class="bg-white shadow-inner text-center py-4 text-gray-600 text-sm">
+<footer class="bg-gradient-to-br from-red-500 via-white to-green-400 shadow-inner text-center py-4 text-gray-600 text-sm">
     &copy;
     <script>document.write(new Date().getFullYear());</script>
     JustBuyIt. All rights reserved.
 </footer>
-
-<!-- Dark mode toggle logic -->
-<script>
-    function toggleDarkMode() {
-        document.documentElement.classList.toggle('dark');
-    }
-</script>
 
 </body>
 </html>

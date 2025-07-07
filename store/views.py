@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect
 from .forms import ProductForm
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-from .models import Product
+from .models import Review
 from .models import Product, Category, SubCategory
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from .models import Wishlist
 import csv
+
 
 @login_required
 def add_product(request):
@@ -179,6 +180,29 @@ def remove_from_cart(request, pk):
 
     return redirect('view_cart')
 
+@login_required
+def increase_cart_quantity(request, pk):
+    cart = request.session.get('cart', {})
+    pk_str = str(pk)
+    if pk_str in cart:
+        cart[pk_str] += 1
+        request.session['cart'] = cart
+    return redirect('view_cart')
+
+
+@login_required
+def decrease_cart_quantity(request, pk):
+    cart = request.session.get('cart', {})
+    pk_str = str(pk)
+    if pk_str in cart:
+        if cart[pk_str] > 1:
+            cart[pk_str] -= 1
+        else:
+            del cart[pk_str]  # remove if quantity reaches zero
+        request.session['cart'] = cart
+    return redirect('view_cart')
+
+
 def bulk_upload(request):
     if request.user.role != 'supplier':
         return redirect('product_list')
@@ -206,3 +230,22 @@ def bulk_upload(request):
         return redirect('supplier_dashboard')
 
     return render(request, 'store/bulk_upload.html')
+
+
+def add_review(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    if request.method == 'POST':
+        rating = request.POST['rating']
+        comment = request.POST['comment']
+
+        Review.objects.create(
+            product=product,
+            user=request.user,
+            rating=rating,
+            comment=comment
+        )
+
+    return redirect('product_detail', pk=product.id)
+
+

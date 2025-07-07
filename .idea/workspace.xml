@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31a0263b-e283-464b-ad54-7ca170c8b2ae" name="Changes" comment="JustBuyIt" />
+    <list default="true" id="31a0263b-e283-464b-ad54-7ca170c8b2ae" name="Changes" comment="JustBuyIt">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce_site/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce_site/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/cart.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/cart.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/product_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/product_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -122,7 +132,10 @@
       <workItem from="1751521191045" duration="76000" />
       <workItem from="1751531931993" duration="1448000" />
       <workItem from="1751600309564" duration="6000" />
-      <workItem from="1751692065493" duration="7209000" />
+      <workItem from="1751692065493" duration="10220000" />
+      <workItem from="1751801725994" duration="5547000" />
+      <workItem from="1751859182905" duration="314000" />
+      <workItem from="1751867134532" duration="82000" />
     </task>
     <task id="LOCAL-00001" summary="JustBuyIt">
       <option name="closed" value="true" />
@@ -164,7 +177,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751739737595</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="JustBuyIt">
+      <option name="closed" value="true" />
+      <created>1751740044635</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1751740044635</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
