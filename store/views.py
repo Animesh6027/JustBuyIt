@@ -32,11 +32,10 @@ def add_product(request):
 def home(request):
     return render(request, 'store/home.html')
 
-
 def product_list(request):
     category_id = request.GET.get('category')
     subcategory_id = request.GET.get('subcategory')
-    search_query = request.GET.get('q', '')
+    search_query = request.GET.get('q', '')  # 👈 Get search query
 
     products = Product.objects.all().order_by('-created_at')
     categories = Category.objects.all()
@@ -57,7 +56,7 @@ def product_list(request):
         'categories': categories,
         'selected_category': category_id,
         'selected_subcategory': subcategory_id,
-        'search_query': search_query,
+        'search_query': search_query,  # 👈 pass back to template
     })
 
 
