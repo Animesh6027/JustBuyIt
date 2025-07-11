@@ -11,7 +11,7 @@
           <div class="bg-white/70 backdrop-blur-lg rounded-xl shadow hover:shadow-lg p-5 transition">
             {% if product.image %}
               <img src="{{ product.image.url }}" alt="{{ product.name }}"
-                   class="w-full h-48 object-contain rounded-xl mb-4 shadow-sm">
+                   class="w-full h-48 object-contain rounded-xl mb-4 shadow-sm transition transform duration-300 hover:scale-105 hover:shadow-2xl">
             {% endif %}
 
             <h3 class="text-xl font-semibold text-gray-800">{{ product.name }}</h3>
@@ -29,7 +29,7 @@
       </div>
     {% else %}
       <div class="text-center text-gray-600 mt-8 text-lg">
-        You haven’t added any products yet.
+        You haven't added any products yet.
       </div>
     {% endif %}
   </section>

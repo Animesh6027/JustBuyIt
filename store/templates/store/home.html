@@ -1,66 +1,112 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block body_class %}min-h-screen bg-gradient-to-br from-green-400 via-blue-500 to-white{% endblock %}
+{% block body_class %}min-h-screen bg-gradient-to-br from-indigo-500 via-blue-400 to-purple-300{% endblock %}
 
 {% block title %}Home | JustBuyIt{% endblock %}
 
 {% block content %}
-    <!-- Hero Section with Gradient Background -->
-    <section class="bg-gradient-to-r from-indigo-100 via-blue-100 to-white py-10 rounded-3xl shadow-lg mx-6 mt-8">
-        <div class="flex flex-col-reverse md:flex-row items-center justify-between px-8 md:px-20">
-            <div class="md:w-1/2 text-center md:text-left">
-                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 leading-snug">
-                    Where Shopping Meets<br><span class="text-indigo-600">Simplicity</span>
-                </h1>
-                <p class="text-base md:text-lg text-gray-600 mt-3">
-                    Discover top products, best deals, and smooth shopping experience at JustBuyIt.
-                </p>
-                <a href="{% url 'product_list' %}"
-                   class="mt-5 inline-block bg-indigo-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow hover:bg-indigo-700 transition">
-                    Shop Now
-                </a>
-            </div>
-
-            <div class="md:w-1/2">
-                <img src="/media/product_images/macbook.jpg" alt="Promo Laptop"
-                     class="rounded-2xl shadow-md w-[260px] md:w-[450px] max-h-[500px] object-cover mx-auto"/>
-            </div>
+    <!-- Modern Hero Section -->
+    <section class="relative overflow-hidden rounded-3xl shadow-lg mx-6 mt-8 mb-12 min-h-[400px] flex items-center justify-center bg-gradient-to-r from-indigo-100 via-blue-100 to-white">
+      <div class="absolute inset-0 md:right-1/2 z-10 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
+      <div class="flex flex-col-reverse md:flex-row items-center justify-between relative z-20 px-8 md:px-20 w-full">
+        <div class="md:w-1/2 text-center md:text-left py-12">
+          <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4 opacity-0 translate-y-8 animate-hero-pop drop-shadow-lg">
+            Where Shopping Meets <br />
+            <span class="text-indigo-200">Simplicity</span>
+          </h1>
+          <p class="text-lg md:text-2xl text-white/90 mb-8 opacity-0 translate-y-8 animate-hero-pop" style="animation-delay:200ms;">
+            Discover top products, best deals, and smooth shopping experience at JustBuyIt.
+          </p>
+          <a href="{% url 'product_list' %}" class="bg-white text-indigo-700 font-bold px-8 py-3 rounded-full shadow-lg hover:bg-indigo-100 transition opacity-0 translate-y-8 animate-hero-pop" style="animation-delay:400ms;">
+            Shop Now
+          </a>
         </div>
+        <div class="md:w-1/2 flex justify-center items-center py-8">
+          <div class="relative w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-2xl overflow-hidden shadow-2xl">
+            <img src="/media/product_images/macbook.jpg" alt="Promo Laptop" class="w-full h-full object-cover scale-105" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+          </div>
+        </div>
+      </div>
+      <style>
+        @keyframes hero-pop {
+          0% { opacity: 0; transform: translateY(2rem);}
+          100% { opacity: 1; transform: translateY(0);}
+        }
+        .animate-hero-pop {
+          animation: hero-pop 1s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+      </style>
+    </section>
+
+
+    <!-- Trending Products Carousel -->
+    <section class="max-w-6xl mx-auto mt-8 mb-16">
+      <h2 class="text-2xl font-bold mb-4 text-gray-800">Trending Products</h2>
+      <div class="relative">
+        <button id="scrollLeft" class="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-indigo-100 rounded-full shadow p-2"><svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+        <div id="trendingCarousel" class="flex overflow-x-auto gap-6 pb-4 px-2 scroll-smooth snap-x">
+          {% for product in trending_products %}
+            <div class="min-w-[220px] max-w-xs bg-white rounded-2xl shadow-md hover:shadow-xl transition p-4 flex flex-col items-center snap-center group" data-tilt data-tilt-max="10" data-tilt-speed="400">
+              <a href="{% url 'product_detail' product.id %}" class="w-full flex justify-center">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-32 h-32 object-cover rounded-xl mb-3 transition duration-300 group-hover:scale-105 group-hover:shadow-2xl" />
+              </a>
+              <h3 class="text-lg font-semibold text-gray-800 text-center group-hover:text-indigo-600">{{ product.name }}</h3>
+              <p class="text-indigo-700 font-bold text-lg mt-1">₹{{ product.price }}</p>
+              <div class="flex gap-2 mt-3">
+                <form action="{% url 'add_to_cart' product.id %}" method="post">{% csrf_token %}
+                  <button type="submit" class="bg-indigo-500 text-white rounded-full p-2 hover:bg-indigo-700 transition shadow" title="Add to Cart">🛒</button>
+                </form>
+                <form action="{% url 'add_to_wishlist' product.id %}" method="post">{% csrf_token %}
+                  <button type="submit" class="bg-pink-500 text-white rounded-full p-2 hover:bg-pink-600 transition shadow" title="Add to Wishlist">❤️</button>
+                </form>
+              </div>
+            </div>
+          {% empty %}
+            <div class="text-gray-500">No trending products yet.</div>
+          {% endfor %}
+        </div>
+        <button id="scrollRight" class="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-indigo-100 rounded-full shadow p-2"><svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.2/dist/vanilla-tilt.min.js"></script>
+      <script>
+        // Carousel scroll buttons
+        const carousel = document.getElementById('trendingCarousel');
+        document.getElementById('scrollLeft').onclick = () => carousel.scrollBy({left: -300, behavior: 'smooth'});
+        document.getElementById('scrollRight').onclick = () => carousel.scrollBy({left: 300, behavior: 'smooth'});
+      </script>
     </section>
 
 
     <!-- Featured Categories Section -->
     <section class="bg-white rounded-2xl shadow-md py-8 px-6 mt-10 mx-auto max-w-6xl">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800">Featured Categories</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-
-            <a href="{% url 'product_list' %}?subcategory=1">
-  <div class="bg-gray-100 rounded-xl p-6 flex flex-col items-center hover:shadow-lg transition">
-    <img src="/media/product_images/smartphone.png" alt="Phones" class="w-16 mb-2">
-    <h3 class="text-lg font-semibold text-gray-700">Phones</h3>
-  </div>
-</a>
-
-            <a href="{% url 'product_list' %}?subcategory=2">
-  <div class="bg-gray-100 rounded-xl p-6 flex flex-col items-center hover:shadow-lg transition">
-    <img src="/media/product_images/laptop-screen.png" alt="Laptops" class="w-16 mb-2">
-    <h3 class="text-lg font-semibold text-gray-700">Laptops</h3>
-  </div>
-</a>
-            <a href="{% url 'product_list' %}?category=3">
-            <div class="bg-gray-100 rounded-xl p-6 flex flex-col items-center hover:shadow-lg transition">
-                <img src="https://cdn-icons-png.flaticon.com/512/3145/3145765.png" alt="Books" class="w-16 mb-2">
-                <h3 class="text-lg font-semibold text-gray-700">Books</h3>
-            </div>
-            </a>
-
-            <a href="{% url 'product_list' %}?category=2">
-            <div class="bg-gray-100 rounded-xl p-6 flex flex-col items-center hover:shadow-lg transition">
-                <img src="https://cdn-icons-png.flaticon.com/512/892/892458.png" alt="Clothing" class="w-16 mb-2">
-                <h3 class="text-lg font-semibold text-gray-700">Fashion</h3>
-            </div>
-            </a>
-
-        </div>
+      <h2 class="text-2xl font-bold mb-6 text-gray-800">Featured Categories</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <a href="{% url 'product_list' %}?subcategory=1">
+          <div class="bg-gradient-to-br from-indigo-200 via-blue-100 to-purple-100 rounded-2xl p-8 flex flex-col items-center shadow-lg hover:shadow-2xl transition transform hover:scale-105 group" data-tilt data-tilt-max="15" data-tilt-speed="400">
+            <svg class="w-16 h-16 mb-4 text-indigo-600 group-hover:text-indigo-800 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><rect x="8" y="18" width="8" height="2" rx="1" fill="currentColor"/></svg>
+            <h3 class="text-lg font-bold text-gray-800">Phones</h3>
+          </div>
+        </a>
+        <a href="{% url 'product_list' %}?subcategory=2">
+          <div class="bg-gradient-to-br from-blue-200 via-indigo-100 to-purple-100 rounded-2xl p-8 flex flex-col items-center shadow-lg hover:shadow-2xl transition transform hover:scale-105 group" data-tilt data-tilt-max="15" data-tilt-speed="400">
+            <svg class="w-16 h-16 mb-4 text-blue-600 group-hover:text-blue-800 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><rect x="8" y="18" width="8" height="2" rx="1" fill="currentColor"/></svg>
+            <h3 class="text-lg font-bold text-gray-800">Laptops</h3>
+          </div>
+        </a>
+        <a href="{% url 'product_list' %}?category=3">
+          <div class="bg-gradient-to-br from-purple-200 via-indigo-100 to-blue-100 rounded-2xl p-8 flex flex-col items-center shadow-lg hover:shadow-2xl transition transform hover:scale-105 group" data-tilt data-tilt-max="15" data-tilt-speed="400">
+            <svg class="w-16 h-16 mb-4 text-purple-600 group-hover:text-purple-800 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 4v16M16 4v16"/></svg>
+            <h3 class="text-lg font-bold text-gray-800">Books</h3>
+          </div>
+        </a>
+        <a href="{% url 'product_list' %}?category=2">
+          <div class="bg-gradient-to-br from-pink-200 via-indigo-100 to-blue-100 rounded-2xl p-8 flex flex-col items-center shadow-lg hover:shadow-2xl transition transform hover:scale-105 group" data-tilt data-tilt-max="15" data-tilt-speed="400">
+            <svg class="w-16 h-16 mb-4 text-pink-500 group-hover:text-pink-700 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M4 8h16"/></svg>
+            <h3 class="text-lg font-bold text-gray-800">Fashion</h3>
+          </div>
+        </a>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.2/dist/vanilla-tilt.min.js"></script>
     </section>
 {% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}About JustBuyIt{% endblock %}
+{% block content %}
+    <div class="max-w-3xl mx-auto bg-white/80 rounded-2xl shadow-xl p-8 mt-10 mb-10">
+        <h1 class="text-3xl font-extrabold text-indigo-700 mb-4 flex items-center gap-2"> <span class="font-pacifico text-indigo-700">🎉About JustBuyIt</span></h1>
+        <div class="text-gray-700 text-lg leading-relaxed mb-8">
+            Ever scrolled forever to find the perfect product?<br>
+            Yeah… us too. So we made <span class="font-pacifico text-indigo-700">JustBuyIt</span> – where shopping is smarter, faster, and way more fun.<br><br>
+            We’re your digital shopping playground where:<br><br>
+            🛍️ Buyers discover awesome products without the drama<br>
+            📦 Suppliers show off their goods like proud parents<br>
+            ❤️ Wishlist dreams come true<br>
+            🧠 Filters and search actually help (shocking, right?)<br>
+            🚀 Everything just feels smooth, sleek, and futuristic<br><br>
+            Whether you're into books, gadgets, fashion, or that thing you didn't know you needed until now — <span class="font-pacifico text-indigo-700">JustBuyIt</span>
+            has your back.<br><br>
+            No mess. No stress. Just buy it. 😉<br>
+            <span class="italic">Built with love, code, and a sprinkle of Tailwind magic.</span>
+        </div>
+
+        <hr class="my-8 border-indigo-200">
+
+        <h2 class="text-2xl font-bold text-indigo-600 mb-2">🌟 Mission & Values</h2>
+        <ul class="list-disc pl-6 text-gray-700 mb-8 space-y-2">
+            <li><span class="font-semibold">Mission:</span> To make online shopping smarter, faster, and more delightful
+                for everyone.
+            </li>
+            <li><span class="font-semibold">Values:</span> Simplicity, Transparency, Innovation, Community, and Fun!
+            </li>
+        </ul>
+
+        <hr class="my-8 border-indigo-200">
+
+        <h2 class="text-2xl font-bold text-indigo-600 mb-2">📊 Fun Facts & Stats</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center mb-8">
+            <div data-tilt data-tilt-max="30" data-tilt-speed="800">
+                <div class="text-3xl font-extrabold text-indigo-700">{{ product_count }}</div>
+                <div class="text-xs text-gray-500 mt-1">Products Listed</div>
+            </div>
+            <div data-tilt data-tilt-max="30" data-tilt-speed="800">
+                <div class="text-3xl font-extrabold text-indigo-700">{{ buyer_count }}</div>
+                <div class="text-xs text-gray-500 mt-1">Happy Buyers</div>
+            </div>
+            <div data-tilt data-tilt-max="30" data-tilt-speed="800">
+                <div class="text-3xl font-extrabold text-indigo-700">{{ supplier_count }}</div>
+                <div class="text-xs text-gray-500 mt-1">Suppliers</div>
+            </div>
+            <div data-tilt data-tilt-max="30" data-tilt-speed="800">
+                <div class="text-3xl font-extrabold text-indigo-700">{{ category_count }}</div>
+                <div class="text-xs text-gray-500 mt-1">Categories</div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.2/dist/vanilla-tilt.min.js"></script>
+
+        <hr class="my-8 border-indigo-200">
+
+        <h2 id="contact" class="text-2xl font-bold text-indigo-600 mb-2 mt-8">Contact</h2>
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Contact Form -->
+            <form class="bg-indigo-50 rounded-xl p-6 shadow space-y-4" method="post" action="#">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Name</label>
+                    <input type="text" name="name" required
+                           class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                    <input type="email" name="email" required
+                           class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Message</label>
+                    <textarea name="message" rows="3" required
+                              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400"></textarea>
+                </div>
+                <button type="submit"
+                        class="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                    Send Message
+                </button>
+            </form>
+            <!-- Contact Info, Social, Map, Hours -->
+            <div class="flex flex-col gap-6 justify-between">
+                <div>
+                    <div class="font-semibold text-gray-700 mb-2">Email</div>
+                    <a href="mailto:support@justbuyit.com"
+                       class="text-indigo-600 hover:underline">support@justbuyit.com</a>
+                </div>
+                <div>
+                    <div class="font-semibold text-gray-700 mb-2">Social Media</div>
+                    <div class="flex gap-4">
+                        <a href="https://twitter.com/justbuyit" target="_blank" class="text-blue-400 hover:text-blue-600 text-2xl" aria-label="Twitter">
+                            <svg class="w-7 h-7 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46 5.924c-.793.352-1.646.59-2.54.698a4.48 4.48 0 001.963-2.475 8.94 8.94 0 01-2.828 1.082 4.48 4.48 0 00-7.635 4.086A12.72 12.72 0 013.11 4.86a4.48 4.48 0 001.39 5.976 4.47 4.47 0 01-2.03-.56v.057a4.48 4.48 0 003.6 4.393 4.48 4.48 0 01-2.025.077 4.48 4.48 0 004.18 3.11A8.98 8.98 0 012 19.54a12.67 12.67 0 006.88 2.02c8.26 0 12.78-6.84 12.78-12.78 0-.195-.004-.39-.013-.583A9.22 9.22 0 0024 4.59a8.93 8.93 0 01-2.54.698z"/></svg>
+                        </a>
+                        <a href="https://instagram.com/justbuyit" target="_blank" class="text-pink-500 hover:text-pink-700 text-2xl" aria-label="Instagram">
+                            <svg class="w-7 h-7 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm0 1.5A4.25 4.25 0 003.5 7.75v8.5A4.25 4.25 0 007.75 20.5h8.5a4.25 4.25 0 004.25-4.25v-8.5A4.25 4.25 0 0016.25 3.5zm4.25 2.75a5.75 5.75 0 110 11.5 5.75 5.75 0 010-11.5zm0 1.5a4.25 4.25 0 100 8.5 4.25 4.25 0 000-8.5zm5.25.75a1 1 0 110 2 1 1 0 010-2z"/></svg>
+                        </a>
+                        <a href="https://facebook.com/justbuyit" target="_blank" class="text-blue-700 hover:text-blue-900 text-2xl" aria-label="Facebook">
+                            <svg class="w-7 h-7 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-semibold text-gray-700 mb-2">Support Hours</div>
+                    <div class="text-gray-600">Mon-Fri: 9am – 6pm<br>Sat: 10am – 4pm<br>Sun: Closed</div>
+                </div>
+                <div>
+                    <div class="font-semibold text-gray-700 mb-2">Our Location</div>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.019019857512!2d-122.4194151846812!3d37.7749297797597!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085808c7e6b1b1b%3A0x4a0b8b8b8b8b8b8b!2sSan+Francisco%2C+CA!5e0!3m2!1sen!2sus!4v1610000000000!5m2!1sen!2sus"
+                            width="100%" height="120" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

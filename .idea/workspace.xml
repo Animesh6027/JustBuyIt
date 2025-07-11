@@ -5,11 +5,32 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="31a0263b-e283-464b-ad54-7ca170c8b2ae" name="Changes" comment="JustBuyIt">
+      <change afterPath="$PROJECT_DIR$/media/product_images/619oqSJVY5L_L5R8WvD._SX679_.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/product_images/Paul-Weaver-Sofa.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/product_images/engin-akyurt-Lp_-4hrfRmk-unsplash.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/product_images/harry-potter_U8FdwxV.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/product_images/men_kurta_FXSfyNV.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/product_images/mens-shoe2_QCeBFXe.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/product_images/mens-shoe_x99sHTT.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/product_images/tamara-menzi-n-vnWQmmVoY-unsplash.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/about.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ecommerce_site/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce_site/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/media/product_images/atomic-habits.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce_site/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce_site/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/media/product_images/619oqSJVY5L._SX679_.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/media/product_images/download.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/add_product.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/add_product.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/product_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/product_detail.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/store/templates/store/product_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/product_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/supplier_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/supplier_dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/wishlist.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/wishlist.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/store/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,7 +82,7 @@
     &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR_AND_PREVIEW&quot;,
+    &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -139,7 +160,17 @@
       <workItem from="1751947204982" duration="12000" />
       <workItem from="1751980212319" duration="1207000" />
       <workItem from="1751995428770" duration="426000" />
-      <workItem from="1751996039947" duration="60000" />
+      <workItem from="1751996039947" duration="508000" />
+      <workItem from="1751997668533" duration="83000" />
+      <workItem from="1751997921942" duration="2599000" />
+      <workItem from="1752032109312" duration="14000" />
+      <workItem from="1752133007023" duration="112000" />
+      <workItem from="1752133700320" duration="5694000" />
+      <workItem from="1752204910447" duration="171000" />
+      <workItem from="1752205405578" duration="50000" />
+      <workItem from="1752205644174" duration="666000" />
+      <workItem from="1752210467278" duration="423000" />
+      <workItem from="1752220952012" duration="3233000" />
     </task>
     <task id="LOCAL-00001" summary="JustBuyIt">
       <option name="closed" value="true" />
@@ -205,7 +236,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751874347372</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="JustBuyIt">
+      <option name="closed" value="true" />
+      <created>1751996119205</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1751996119205</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

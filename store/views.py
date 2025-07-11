@@ -9,6 +9,10 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from .models import Wishlist
 import csv
+from django.core.mail import send_mail
+from django.conf import settings
+from accounts.models import CustomUser
+from django.core.paginator import Paginator
 
 
 @login_required
@@ -30,7 +34,8 @@ def add_product(request):
 
 
 def home(request):
-    return render(request, 'store/home.html')
+    trending_products = Product.objects.order_by('-created_at')[:8]
+    return render(request, 'store/home.html', {'trending_products': trending_products})
 
 def product_list(request):
     category_id = request.GET.get('category')
@@ -51,12 +56,18 @@ def product_list(request):
             Q(name__icontains=search_query) | Q(description__icontains=search_query)
         )
 
+    # Pagination: 9 products per page
+    paginator = Paginator(products, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'store/product_list.html', {
         'products': products,
         'categories': categories,
         'selected_category': category_id,
         'selected_subcategory': subcategory_id,
         'search_query': search_query,  # 👈 pass back to template
+        'page_obj': page_obj,  # 👈 pass page_obj for pagination
     })
 
 
@@ -246,5 +257,38 @@ def add_review(request, product_id):
         )
 
     return redirect('product_detail', pk=product.id)
+
+
+def about_view(request):
+    # Real-time stats
+    product_count = Product.objects.count()
+    buyer_count = CustomUser.objects.filter(role='buyer').count()
+    supplier_count = CustomUser.objects.filter(role='supplier').count()
+    category_count = Category.objects.count()
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        message = request.POST.get('message', '').strip()
+        if name and email and message:
+            # Email sending code commented out for now
+            # subject = f"New Contact Form Submission from {name}"
+            # body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
+            # send_mail(
+            #     subject,
+            #     body,
+            #     settings.DEFAULT_FROM_EMAIL,
+            #     ['animeshsingh6027@gmail.com'],
+            #     fail_silently=False,
+            # )
+            messages.success(request, 'Thank you for contacting us! We will get back to you soon.')
+            return redirect('about')
+        else:
+            messages.error(request, 'Please fill in all fields.')
+    return render(request, 'about.html', {
+        'product_count': product_count,
+        'buyer_count': buyer_count,
+        'supplier_count': supplier_count,
+        'category_count': category_count,
+    })
 
 

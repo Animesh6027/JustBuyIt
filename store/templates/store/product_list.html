@@ -17,22 +17,28 @@
 
   <!-- 🔍 Search Bar + Filter Column -->
   <div class="lg:w-1/4 flex flex-col gap-4">
-
     <!-- 🔍 Search Bar -->
-    <form method="get" action="{% url 'product_list' %}" class="w-full">
-      <div class="flex rounded overflow-hidden shadow border bg-white">
-        <input type="text" name="q" placeholder="Search products..."
-               value="{{ search_query }}"
-               class="w-full px-4 py-2 focus:outline-none"
-        >
-        <button type="submit" class="bg-indigo-600 text-white px-4 hover:bg-indigo-700 transition">
-          🔍 Search
-        </button>
-      </div>
+    <form method="get" action="{% url 'product_list' %}" class="flex items-center w-full bg-white rounded-full shadow-lg overflow-hidden mb-4">
+      <input
+        type="text"
+        name="q"
+        placeholder="Search products..."
+        value="{{ search_query }}"
+        class="flex-grow px-6 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-transparent"
+      />
+      <button
+        type="submit"
+        class="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 transition px-6 py-3 text-white font-semibold rounded-r-full"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="white" viewBox="0 0 24 24" stroke="none">
+          <path fill-rule="evenodd" d="M10.5 3a7.5 7.5 0 015.92 12.18l4.15 4.15a1 1 0 01-1.42 1.42l-4.15-4.15A7.5 7.5 0 1110.5 3zm0 2a5.5 5.5 0 100 11 5.5 5.5 0 000-11z" clip-rule="evenodd"/>
+        </svg>
+        <span class="leading-none font-semibold">Search</span>
+      </button>
     </form>
 
-    <!-- 🧭 Sidebar Filters -->
-    <aside class="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-md">
+    <!-- 🧭 Fixed Sidebar Filters -->
+    <aside class="lg:sticky lg:top-6 bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-md h-fit max-h-[calc(100vh-120px)] overflow-y-auto">
       <h2 class="text-xl font-semibold mb-4 text-indigo-700">Filters</h2>
 
       <form method="get" class="space-y-4">
@@ -68,57 +74,65 @@
     </aside>
   </div>
 
-
-    <!-- Products Grid -->
-    <section class="lg:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for product in products %}
-        <div class="bg-white/70 backdrop-blur-xl rounded-2xl p-4 shadow-md hover:shadow-lg transform transition duration-300 group relative">
-            <a href="{% url 'product_detail' product.id %}">
-                <img src="{{ product.image.url }}"
-                     alt="{{ product.name }}"
-                     class="w-full h-48 object-cover rounded-lg shadow-sm"/>
-
-                <div class="mt-4 space-y-1">
-                    <h3 class="text-lg font-semibold text-gray-800 group-hover:text-indigo-600">
-                        {{ product.name }}
-                    </h3>
-                    <p class="text-sm text-gray-500">{{ product.category.name }}
-                        › {{ product.subcategory.name }}</p>
-                    <p class="text-indigo-700 font-bold text-lg">₹{{ product.price }}</p>
-                    {% if user.is_authenticated and user.role == "supplier" and product.supplier == user %}
-                        <div class="mt-2 flex space-x-3">
-                            <a href="{% url 'edit_product' product.id %}"
-                               class="text-blue-600 font-medium hover:underline">✏️ Edit</a>
-                            <a href="{% url 'delete_product' product.id %}"
-                               class="text-red-600 font-medium hover:underline">🗑 Delete</a>
-                        </div>
-                    {% endif %}
-                </div>
-            </a>
-
-            {% if user.is_authenticated and user.role == "buyer" %}
-                <form action="{% url 'add_to_cart' product.id %}" method="post" class="absolute top-3 right-3">
-                    {% csrf_token %}
-                    <button type="submit"
-                            class="bg-indigo-500 text-white rounded-full p-2 hover:bg-indigo-700 transition shadow">
-                        🛒
-                    </button>
-                </form>
-                <!-- Add to Wishlist -->
-                <form action="{% url 'add_to_wishlist' product.id %}" method="post" class="absolute top-3 left-3">
-                    {% csrf_token %}
-                    <button type="submit"
-                            class="bg-pink-500 text-white rounded-full p-2 hover:bg-pink-600 transition shadow"
-                            title="Add to Wishlist">
-                        ❤️
-                    </button>
-                </form>
-            {% endif %}
-        </div>
-        {% empty %}
-        <p class="text-gray-600 col-span-3 text-center">No products found for the selected filters.</p>
-        {% endfor %}
-    </section>
+  <!-- Products Grid -->
+  <section class="lg:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for product in page_obj %}
+      <div class="relative bg-gradient-to-br from-white via-indigo-50 to-blue-100 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition transform hover:scale-105 group flex flex-col items-center" data-tilt data-tilt-max="10" data-tilt-speed="400" style="opacity:0; animation:fadeInUp 0.7s ease forwards; animation-delay:{{ forloop.counter0|add:'1' }}00ms;">
+          {% if product.created_at and product.created_at|timesince < '7 days' %}
+            <span class="absolute top-4 left-4 bg-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">New</span>
+          {% endif %}
+          <a href="{% url 'product_detail' product.id %}" class="w-full flex justify-center">
+              <img src="{{ product.image.url }}"
+                   alt="{{ product.name }}"
+                   class="w-40 h-40 object-cover rounded-2xl mb-4 transition duration-300 group-hover:scale-110 group-hover:shadow-2xl"/>
+          </a>
+          <h3 class="text-xl font-bold text-gray-800 text-center group-hover:text-indigo-600 mb-1">{{ product.name }}</h3>
+          <p class="text-sm text-gray-500 mb-1">{{ product.category.name }} › {{ product.subcategory.name }}</p>
+          <p class="text-indigo-700 font-bold text-lg mb-3">₹{{ product.price }}</p>
+          <div class="flex gap-2 mt-auto">
+              <form action="{% url 'add_to_cart' product.id %}" method="post">{% csrf_token %}
+                  <button type="submit" class="bg-indigo-500 text-white rounded-full p-2 hover:bg-indigo-700 transition shadow" title="Add to Cart">🛒</button>
+              </form>
+              <form action="{% url 'add_to_wishlist' product.id %}" method="post">{% csrf_token %}
+                  <button type="submit" class="bg-pink-500 text-white rounded-full p-2 hover:bg-pink-600 transition shadow" title="Add to Wishlist">❤️</button>
+              </form>
+          </div>
+          {% if user.is_authenticated and user.role == "supplier" and product.supplier == user %}
+              <div class="mt-2 flex space-x-3">
+                  <a href="{% url 'edit_product' product.id %}"
+                     class="text-blue-600 font-medium hover:underline">✏️ Edit</a>
+                  <a href="{% url 'delete_product' product.id %}"
+                     class="text-red-600 font-medium hover:underline">🗑 Delete</a>
+              </div>
+          {% endif %}
+      </div>
+      {% empty %}
+      <p class="text-gray-600 col-span-3 text-center">No products found for the selected filters.</p>
+      {% endfor %}
+      <!-- Pagination Controls: align below grid -->
+      <div class="col-span-full w-full flex justify-center mt-8">
+        <nav class="flex items-center space-x-2">
+          {% if page_obj.has_previous %}
+            <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_subcategory %}subcategory={{ selected_subcategory }}&{% endif %}page={{ page_obj.previous_page_number }}" class="px-4 py-2 rounded-lg bg-indigo-100 text-indigo-700 font-semibold hover:bg-indigo-200 transition">Prev</a>
+          {% else %}
+            <span class="px-4 py-2 rounded-lg bg-gray-100 text-gray-400 font-semibold cursor-not-allowed">Prev</span>
+          {% endif %}
+          <span class="px-4 py-2 text-gray-700 font-semibold">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_subcategory %}subcategory={{ selected_subcategory }}&{% endif %}page={{ page_obj.next_page_number }}" class="px-4 py-2 rounded-lg bg-indigo-100 text-indigo-700 font-semibold hover:bg-indigo-200 transition">Next</a>
+          {% else %}
+            <span class="px-4 py-2 rounded-lg bg-gray-100 text-gray-400 font-semibold cursor-not-allowed">Next</span>
+          {% endif %}
+        </nav>
+      </div>
+  </section>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.2/dist/vanilla-tilt.min.js"></script>
+  <style>
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </div>
 
 {% endblock %}
