@@ -1,36 +1,346 @@
 {% extends 'base.html' %}
-{% block title %}My Products | JustBuyIt{% endblock %}
+{% block title %}Supplier Dashboard | JustBuyIt{% endblock %}
+{% load store_extras %}
 
 {% block content %}
-  <section class="max-w-7xl mx-auto px-4 py-10">
-    <h2 class="text-3xl font-extrabold text-indigo-700 mb-6">📦 My Products</h2>
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+  <!-- Header Section -->
+  <div class="bg-white/80 backdrop-blur-lg border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">📊 Supplier Dashboard</h1>
+          <p class="text-gray-600 mt-1">Welcome back, {{ request.user.username }}! Here's your business overview.</p>
+        </div>
+        <div class="flex space-x-3">
+          <a href="{% url 'add_product' %}" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition flex items-center">
+            <span class="mr-2">➕</span> Add Product
+          </a>
+          <a href="{% url 'bulk_upload' %}" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition flex items-center">
+            <span class="mr-2">📁</span> Bulk Upload
+          </a>
+          <a href="{% url 'supplier_reviews' %}" class="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition flex items-center">
+            <span class="mr-2">⭐</span> Reviews
+          </a>
+          <a href="{% url 'supplier_analytics' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition flex items-center">
+            <span class="mr-2">📊</span> Analytics
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    {% if products %}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {% for product in products %}
-          <div class="bg-white/70 backdrop-blur-lg rounded-xl shadow hover:shadow-lg p-5 transition">
-            {% if product.image %}
-              <img src="{{ product.image.url }}" alt="{{ product.name }}"
-                   class="w-full h-48 object-contain rounded-xl mb-4 shadow-sm transition transform duration-300 hover:scale-105 hover:shadow-2xl">
-            {% endif %}
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Analytics Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Total Products -->
+      <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Total Products</p>
+            <p class="text-3xl font-bold text-indigo-600">{{ total_products }}</p>
+          </div>
+          <div class="bg-indigo-100 p-3 rounded-full">
+            <span class="text-2xl">📦</span>
+          </div>
+        </div>
+      </div>
 
-            <h3 class="text-xl font-semibold text-gray-800">{{ product.name }}</h3>
-            <p class="text-green-700 font-bold mt-1">₹{{ product.price }}</p>
-            <p class="text-sm text-gray-600">{{ product.category.name }} → {{ product.subcategory.name }}</p>
+      <!-- Total Reviews -->
+      <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Total Reviews</p>
+            <p class="text-3xl font-bold text-green-600">{{ total_reviews }}</p>
+          </div>
+          <div class="bg-green-100 p-3 rounded-full">
+            <span class="text-2xl">⭐</span>
+          </div>
+        </div>
+      </div>
 
-            <div class="mt-4 flex justify-start space-x-4">
-              <a href="{% url 'edit_product' product.id %}"
-                 class="text-blue-600 font-medium hover:underline">✏️ Edit</a>
-              <a href="{% url 'delete_product' product.id %}"
-                 class="text-red-600 font-medium hover:underline">🗑 Delete</a>
+      <!-- Average Rating -->
+      <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Avg Rating</p>
+            <p class="text-3xl font-bold text-yellow-600">{{ avg_rating }}/5</p>
+          </div>
+          <div class="bg-yellow-100 p-3 rounded-full">
+            <span class="text-2xl">🏆</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Revenue -->
+      <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Total Value</p>
+            <p class="text-3xl font-bold text-purple-600">₹{{ total_revenue }}</p>
+          </div>
+          <div class="bg-purple-100 p-3 rounded-full">
+            <span class="text-2xl">💰</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Product Trend Chart -->
+      <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">📈 Product Creation Trend</h3>
+        <div class="h-64 flex items-end justify-between space-x-2">
+          {% for count in product_counts %}
+          <div class="flex-1 flex flex-col items-center">
+            <div class="w-full bg-indigo-200 rounded-t-lg" style="height: {{ count|add:1|mul:20 }}px;"></div>
+            <p class="text-xs text-gray-600 mt-2">{{ forloop.counter }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        <p class="text-sm text-gray-500 mt-2 text-center">Last 6 months</p>
+      </div>
+
+      <!-- Category Distribution -->
+      <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">📊 Category Distribution</h3>
+        <div class="space-y-3">
+          {% for stat in category_stats %}
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-gray-700">{{ stat.category__name }}</span>
+            <div class="flex items-center space-x-2">
+              <div class="w-24 bg-gray-200 rounded-full h-2">
+                <div class="bg-indigo-600 h-2 rounded-full" style="width: {% widthratio stat.count total_products 100 %}%"></div>
+              </div>
+              <span class="text-sm text-gray-600">{{ stat.count }}</span>
             </div>
           </div>
-        {% endfor %}
+          {% endfor %}
+        </div>
       </div>
-    {% else %}
-      <div class="text-center text-gray-600 mt-8 text-lg">
-        You haven't added any products yet.
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg mb-8">
+      <div class="flex flex-col md:flex-row gap-4">
+        <!-- Search -->
+        <div class="flex-1">
+          <form method="GET" class="flex">
+            <input type="text" name="q" value="{{ search_query }}" 
+                   placeholder="Search products..." 
+                   class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700 transition">
+              🔍
+            </button>
+          </form>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="md:w-48">
+          <select name="category" onchange="this.form.submit()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            <option value="">All Categories</option>
+            {% for category in all_categories %}
+            <option value="{{ category.id }}" {% if category_filter == category.id|stringformat:"s" %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Status Filter -->
+        <div class="md:w-32">
+          <select name="status" onchange="this.form.submit()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            <option value="">All Status</option>
+            <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+          </select>
+        </div>
       </div>
-    {% endif %}
-  </section>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">📦 My Products</h2>
+        <p class="text-gray-600">{{ page_obj.paginator.count }} products</p>
+      </div>
+
+      {% if page_obj %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {% for product in page_obj %}
+          <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
+            {% if product.image %}
+              <div class="relative overflow-hidden rounded-t-xl">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                     class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300">
+                <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-sm font-medium text-gray-700">
+                  ₹{{ product.price }}
+                </div>
+              </div>
+            {% else %}
+              <div class="w-full h-48 bg-gray-200 rounded-t-xl flex items-center justify-center">
+                <span class="text-gray-400 text-4xl">📦</span>
+              </div>
+            {% endif %}
+
+            <div class="p-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">{{ product.name }}</h3>
+              <p class="text-sm text-gray-600 mb-2">{{ product.category.name }} → {{ product.subcategory.name }}</p>
+              
+              <!-- Product Stats -->
+              <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                <span>⭐ {{ product.reviews.count }} reviews</span>
+                <span>📅 {{ product.created_at|date:"M d" }}</span>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex space-x-2">
+                <a href="{% url 'edit_product' product.id %}" 
+                   class="flex-1 bg-blue-600 text-white text-center py-2 px-3 rounded-lg hover:bg-blue-700 transition text-sm">
+                  ✏️ Edit
+                </a>
+                <a href="{% url 'delete_product' product.id %}" 
+                   class="flex-1 bg-red-600 text-white text-center py-2 px-3 rounded-lg hover:bg-red-700 transition text-sm">
+                  🗑️ Delete
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="mt-8 flex justify-center">
+          <nav class="flex space-x-2">
+            {% if page_obj.has_previous %}
+              <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+                 class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                ← Previous
+              </a>
+            {% endif %}
+
+            <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+                 class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                Next →
+              </a>
+            {% endif %}
+          </nav>
+        </div>
+        {% endif %}
+
+      {% else %}
+        <div class="text-center py-12">
+          <div class="text-6xl mb-4">📦</div>
+          <h3 class="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
+          <p class="text-gray-500 mb-6">
+            {% if search_query or category_filter or status_filter %}
+              Try adjusting your filters or search terms.
+            {% else %}
+              You haven't added any products yet.
+            {% endif %}
+          </p>
+          <a href="{% url 'add_product' %}" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition">
+            Add Your First Product
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+      <!-- Recent Reviews -->
+      <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">⭐ Recent Reviews</h3>
+        {% if recent_reviews %}
+          <div class="space-y-4">
+            {% for review in recent_reviews %}
+            <div class="border-l-4 border-indigo-500 pl-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-medium text-gray-800">{{ review.product.name }}</p>
+                  <p class="text-sm text-gray-600">{{ review.user.username }}</p>
+                </div>
+                <div class="flex items-center">
+                  <span class="text-yellow-500">★</span>
+                  <span class="ml-1 text-sm font-medium">{{ review.rating }}/5</span>
+                </div>
+              </div>
+              <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ review.comment }}</p>
+              <p class="text-xs text-gray-400 mt-1">{{ review.created_at|date:"M d, Y" }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-gray-500 text-center py-8">No reviews yet</p>
+        {% endif %}
+      </div>
+
+      <!-- Top Products -->
+      <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">🏆 Top Products</h3>
+        {% if top_products %}
+          <div class="space-y-4">
+            {% for product in top_products %}
+            <div class="flex items-center space-x-4">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-12 h-12 object-cover rounded-lg">
+              {% else %}
+                <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <span class="text-gray-400">📦</span>
+                </div>
+              {% endif %}
+              <div class="flex-1">
+                <p class="font-medium text-gray-800">{{ product.name }}</p>
+                <p class="text-sm text-gray-600">₹{{ product.price }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm font-medium text-indigo-600">{{ product.review_count }} reviews</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-gray-500 text-center py-8">No products yet</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Auto-submit forms when filters change
+document.querySelectorAll('select[name="category"], select[name="status"]').forEach(select => {
+  select.addEventListener('change', function() {
+    const form = document.createElement('form');
+    form.method = 'GET';
+    
+    // Add current search query
+    const searchQuery = document.querySelector('input[name="q"]').value;
+    if (searchQuery) {
+      const searchInput = document.createElement('input');
+      searchInput.type = 'hidden';
+      searchInput.name = 'q';
+      searchInput.value = searchQuery;
+      form.appendChild(searchInput);
+    }
+    
+    // Add selected filter
+    const filterInput = document.createElement('input');
+    filterInput.type = 'hidden';
+    filterInput.name = this.name;
+    filterInput.value = this.value;
+    form.appendChild(filterInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+  });
+});
+</script>
 {% endblock %}

@@ -7,6 +7,8 @@ urlpatterns = [
     path('products/', views.product_list, name='product_list'),
     path('product/<int:pk>/', views.product_detail, name='product_detail'),
     path('dashboard/', views.supplier_dashboard, name='supplier_dashboard'),
+    path('dashboard/reviews/', views.supplier_reviews, name='supplier_reviews'),
+    path('dashboard/analytics/', views.supplier_analytics, name='supplier_analytics'),
     path('product/<int:pk>/edit/', views.edit_product, name='edit_product'),
     path('product/<int:pk>/delete/', views.delete_product, name='delete_product'),
     path('cart/', views.view_cart, name='view_cart'),
@@ -20,7 +22,4 @@ urlpatterns = [
     path('cart/increase/<int:pk>/', views.increase_cart_quantity, name='increase_cart_quantity'),
     path('cart/decrease/<int:pk>/', views.decrease_cart_quantity, name='decrease_cart_quantity'),
     path('product/<int:product_id>/review/', views.add_review, name='add_review'),
-
-
-
 ]

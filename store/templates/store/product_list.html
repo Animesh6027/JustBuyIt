@@ -78,7 +78,7 @@
   <section class="lg:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {% for product in page_obj %}
       <div class="relative bg-gradient-to-br from-white via-indigo-50 to-blue-100 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition transform hover:scale-105 group flex flex-col items-center" data-tilt data-tilt-max="10" data-tilt-speed="400" style="opacity:0; animation:fadeInUp 0.7s ease forwards; animation-delay:{{ forloop.counter0|add:'1' }}00ms;">
-          {% if product.created_at and product.created_at|timesince < '7 days' %}
+          {% if product.created_at and product.created_at|timesince < '4 days' %}
             <span class="absolute top-4 left-4 bg-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">New</span>
           {% endif %}
           <a href="{% url 'product_detail' product.id %}" class="w-full flex justify-center">

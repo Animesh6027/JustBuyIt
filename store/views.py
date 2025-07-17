@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from accounts.models import CustomUser
 from django.core.paginator import Paginator
+from django.db import models
 
 
 @login_required
@@ -29,7 +30,6 @@ def add_product(request):
             return redirect('home')  # or 'product_list'
     else:
         form = ProductForm()
-
     return render(request, 'store/add_product.html', {'form': form})
 
 
@@ -81,8 +81,100 @@ def supplier_dashboard(request):
     if request.user.role != 'supplier':
         return redirect('product_list')
 
+    # Get supplier's products
     products = Product.objects.filter(supplier=request.user).order_by('-created_at')
-    return render(request, 'store/supplier_dashboard.html', {'products': products})
+    
+    # Analytics data
+    total_products = products.count()
+    total_reviews = Review.objects.filter(product__supplier=request.user).count()
+    avg_rating = Review.objects.filter(product__supplier=request.user).aggregate(
+        avg=models.Avg('rating')
+    )['avg'] or 0
+    
+    # Revenue calculation (assuming price as revenue for now)
+    total_revenue = products.aggregate(
+        total=models.Sum('price')
+    )['total'] or 0
+    
+    # Recent activity
+    recent_products = products[:5]
+    recent_reviews = Review.objects.filter(product__supplier=request.user).order_by('-created_at')[:5]
+    
+    # Product performance (by review count)
+    top_products = products.annotate(
+        review_count=models.Count('reviews')
+    ).order_by('-review_count')[:5]
+    
+    # Category distribution
+    category_stats = products.values('category__name').annotate(
+        count=models.Count('id')
+    ).order_by('-count')
+    
+    # Monthly product creation trend
+    from django.utils import timezone
+    from datetime import timedelta
+    import calendar
+    
+    # Get last 6 months
+    months = []
+    product_counts = []
+    for i in range(6):
+        date = timezone.now() - timedelta(days=30*i)
+        month_name = calendar.month_name[date.month]
+        count = products.filter(
+            created_at__year=date.year,
+            created_at__month=date.month
+        ).count()
+        months.append(month_name)
+        product_counts.append(count)
+    
+    # Filter products if search query
+    search_query = request.GET.get('q', '')
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) | 
+            Q(description__icontains=search_query) |
+            Q(category__name__icontains=search_query)
+        )
+    
+    # Category filter
+    category_filter = request.GET.get('category', '')
+    if category_filter:
+        products = products.filter(category_id=category_filter)
+    
+    # Status filter (active/inactive - for future use)
+    status_filter = request.GET.get('status', '')
+    if status_filter == 'active':
+        products = products.filter(active=True)  # Assuming active field exists
+    elif status_filter == 'inactive':
+        products = products.filter(active=False)
+    
+    # Pagination
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Get all categories for filter dropdown
+    all_categories = Category.objects.all()
+    
+    return render(request, 'store/supplier_dashboard.html', {
+        'products': page_obj,
+        'total_products': total_products,
+        'total_reviews': total_reviews,
+        'avg_rating': round(avg_rating, 1),
+        'total_revenue': total_revenue,
+        'recent_products': recent_products,
+        'recent_reviews': recent_reviews,
+        'top_products': top_products,
+        'category_stats': category_stats,
+        'months': months,
+        'product_counts': product_counts,
+        'search_query': search_query,
+        'category_filter': category_filter,
+        'status_filter': status_filter,
+        'all_categories': all_categories,
+        'page_obj': page_obj,
+    })
 
 
 @login_required
@@ -289,6 +381,134 @@ def about_view(request):
         'buyer_count': buyer_count,
         'supplier_count': supplier_count,
         'category_count': category_count,
+    })
+
+
+@login_required
+def supplier_reviews(request):
+    if request.user.role != 'supplier':
+        return redirect('product_list')
+    
+    # Get all reviews for supplier's products
+    reviews = Review.objects.filter(product__supplier=request.user).select_related('product', 'user').order_by('-created_at')
+    
+    # Filter by rating
+    rating_filter = request.GET.get('rating', '')
+    if rating_filter:
+        reviews = reviews.filter(rating=rating_filter)
+    
+    # Filter by product
+    product_filter = request.GET.get('product', '')
+    if product_filter:
+        reviews = reviews.filter(product_id=product_filter)
+    
+    # Search reviews
+    search_query = request.GET.get('q', '')
+    if search_query:
+        reviews = reviews.filter(
+            Q(comment__icontains=search_query) | 
+            Q(product__name__icontains=search_query) |
+            Q(user__username__icontains=search_query)
+        )
+    
+    # Pagination
+    paginator = Paginator(reviews, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Get supplier's products for filter
+    supplier_products = Product.objects.filter(supplier=request.user)
+    
+    # Review statistics
+    total_reviews = reviews.count()
+    avg_rating = reviews.aggregate(avg=models.Avg('rating'))['avg'] or 0
+    rating_distribution = reviews.values('rating').annotate(count=models.Count('id')).order_by('rating')
+    
+    return render(request, 'store/supplier_reviews.html', {
+        'reviews': page_obj,
+        'total_reviews': total_reviews,
+        'avg_rating': round(avg_rating, 1),
+        'rating_distribution': rating_distribution,
+        'supplier_products': supplier_products,
+        'rating_filter': rating_filter,
+        'product_filter': product_filter,
+        'search_query': search_query,
+        'page_obj': page_obj,
+    })
+
+
+@login_required
+def supplier_analytics(request):
+    if request.user.role != 'supplier':
+        return redirect('product_list')
+    
+    # Get supplier's products
+    products = Product.objects.filter(supplier=request.user)
+    
+    # Sales analytics (assuming price as revenue for now)
+    total_revenue = products.aggregate(total=models.Sum('price'))['total'] or 0
+    avg_product_price = products.aggregate(avg=models.Avg('price'))['avg'] or 0
+    
+    # Review analytics
+    reviews = Review.objects.filter(product__supplier=request.user)
+    total_reviews = reviews.count()
+    avg_rating = reviews.aggregate(avg=models.Avg('rating'))['avg'] or 0
+    
+    # Product performance
+    top_products = products.annotate(
+        review_count=models.Count('reviews'),
+        avg_rating=models.Avg('reviews__rating')
+    ).order_by('-review_count')[:10]
+    
+    # Category performance
+    category_performance = products.values('category__name').annotate(
+        product_count=models.Count('id'),
+        total_value=models.Sum('price'),
+        avg_rating=models.Avg('reviews__rating')
+    ).order_by('-product_count')
+    
+    # Monthly trends
+    from django.utils import timezone
+    from datetime import timedelta
+    import calendar
+    
+    months = []
+    product_counts = []
+    revenue_data = []
+    
+    for i in range(6):
+        date = timezone.now() - timedelta(days=30*i)
+        month_name = calendar.month_name[date.month]
+        month_products = products.filter(
+            created_at__year=date.year,
+            created_at__month=date.month
+        )
+        count = month_products.count()
+        revenue = month_products.aggregate(total=models.Sum('price'))['total'] or 0
+        
+        months.append(month_name)
+        product_counts.append(count)
+        revenue_data.append(revenue)
+    
+    # --- SCALE BAR HEIGHTS ---
+    max_revenue = max(revenue_data) if revenue_data else 1
+    max_count = max(product_counts) if product_counts else 1
+    max_bar_height = 180  # px
+    revenue_bar_heights = [int((val / max_revenue) * max_bar_height) if max_revenue else 0 for val in revenue_data]
+    product_bar_heights = [int((val / max_count) * max_bar_height) if max_count else 0 for val in product_counts]
+    
+    return render(request, 'store/supplier_analytics.html', {
+        'total_revenue': total_revenue,
+        'avg_product_price': round(avg_product_price, 2),
+        'total_reviews': total_reviews,
+        'avg_rating': round(avg_rating, 1),
+        'top_products': top_products,
+        'category_performance': category_performance,
+        'months': months,
+        'product_counts': product_counts,
+        'revenue_data': revenue_data,
+        'revenue_bar_heights': revenue_bar_heights,
+        'product_bar_heights': product_bar_heights,
     })
 
 
