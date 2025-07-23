@@ -102,8 +102,6 @@ Payment
 
 📬 Email notifications
 
-🔒 2FA Authentication
-
 🧑‍🎓 Project Developed By
 Animesh Singh
 
