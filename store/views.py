@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
-from .forms import ProductForm
+from .forms import ProductForm, CheckoutForm
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-from .models import Review
+from .models import Review, Order, OrderItem
 from .models import Product, Category, SubCategory
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -26,16 +26,44 @@ def add_product(request):
         if form.is_valid():
             product = form.save(commit=False)
             product.supplier = request.user
+            
+            # Update stock status based on quantity
+            if product.stock_quantity <= 0:
+                product.is_in_stock = False
+            elif product.stock_quantity <= product.low_stock_threshold:
+                product.is_in_stock = True  # Still in stock but low
+            else:
+                product.is_in_stock = True
+            
             product.save()
-            return redirect('home')  # or 'product_list'
+            
+            # Show success message with stock info
+            if product.stock_quantity == 0:
+                messages.success(request, f"✅ Product '{product.name}' added successfully! ⚠️ Stock: Out of stock")
+            elif product.stock_quantity <= product.low_stock_threshold:
+                messages.success(request, f"✅ Product '{product.name}' added successfully! ⚠️ Stock: Low ({product.stock_quantity} units)")
+            else:
+                messages.success(request, f"✅ Product '{product.name}' added successfully! 📦 Stock: {product.stock_quantity} units")
+            
+            return redirect('supplier_dashboard')
+        else:
+            messages.error(request, "❌ Please correct the errors below.")
     else:
         form = ProductForm()
+    
     return render(request, 'store/add_product.html', {'form': form})
 
 
 def home(request):
     trending_products = Product.objects.order_by('-created_at')[:8]
-    return render(request, 'store/home.html', {'trending_products': trending_products})
+    
+    # Get products for slideshow carousel (featured products)
+    carousel_products = Product.objects.filter(is_in_stock=True).order_by('-created_at')[:6]
+    
+    return render(request, 'store/home.html', {
+        'trending_products': trending_products,
+        'carousel_products': carousel_products
+    })
 
 def product_list(request):
     category_id = request.GET.get('category')
@@ -157,6 +185,12 @@ def supplier_dashboard(request):
     # Get all categories for filter dropdown
     all_categories = Category.objects.all()
     
+    # Stock management data
+    in_stock_count = products.filter(is_in_stock=True).count()
+    low_stock_count = products.filter(stock_quantity__lte=models.F('low_stock_threshold')).exclude(stock_quantity=0).count()
+    out_of_stock_count = products.filter(stock_quantity=0).count()
+    low_stock_products = products.filter(stock_quantity__lte=models.F('low_stock_threshold')).exclude(stock_quantity=0).order_by('stock_quantity')[:5]
+    
     return render(request, 'store/supplier_dashboard.html', {
         'products': page_obj,
         'total_products': total_products,
@@ -169,6 +203,10 @@ def supplier_dashboard(request):
         'category_stats': category_stats,
         'months': months,
         'product_counts': product_counts,
+        'in_stock_count': in_stock_count,
+        'low_stock_count': low_stock_count,
+        'out_of_stock_count': out_of_stock_count,
+        'low_stock_products': low_stock_products,
         'search_query': search_query,
         'category_filter': category_filter,
         'status_filter': status_filter,
@@ -188,8 +226,29 @@ def edit_product(request, pk):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            
+            # Update stock status based on quantity
+            if product.stock_quantity <= 0:
+                product.is_in_stock = False
+            elif product.stock_quantity <= product.low_stock_threshold:
+                product.is_in_stock = True  # Still in stock but low
+            else:
+                product.is_in_stock = True
+            
+            product.save()
+            
+            # Show success message with stock info
+            if product.stock_quantity == 0:
+                messages.success(request, f"✅ Product '{product.name}' updated successfully! ⚠️ Stock: Out of stock")
+            elif product.stock_quantity <= product.low_stock_threshold:
+                messages.success(request, f"✅ Product '{product.name}' updated successfully! ⚠️ Stock: Low ({product.stock_quantity} units)")
+            else:
+                messages.success(request, f"✅ Product '{product.name}' updated successfully! 📦 Stock: {product.stock_quantity} units")
+            
             return redirect('supplier_dashboard')
+        else:
+            messages.error(request, "❌ Please correct the errors below.")
     else:
         form = ProductForm(instance=product)
 
@@ -510,5 +569,234 @@ def supplier_analytics(request):
         'revenue_bar_heights': revenue_bar_heights,
         'product_bar_heights': product_bar_heights,
     })
+
+
+@login_required
+def stock_management(request):
+    if request.user.role != 'supplier':
+        return redirect('product_list')
+    
+    products = Product.objects.filter(supplier=request.user).order_by('-last_stock_update')
+    
+    # Stock statistics
+    total_products = products.count()
+    in_stock_count = products.filter(is_in_stock=True).count()
+    low_stock_count = products.filter(stock_quantity__lte=models.F('low_stock_threshold')).exclude(stock_quantity=0).count()
+    out_of_stock_count = products.filter(stock_quantity=0).count()
+    
+    # Recent stock updates
+    recent_updates = products.filter(last_stock_update__isnull=False).order_by('-last_stock_update')[:10]
+    
+    return render(request, 'store/stock_management.html', {
+        'products': products,
+        'total_products': total_products,
+        'in_stock_count': in_stock_count,
+        'low_stock_count': low_stock_count,
+        'out_of_stock_count': out_of_stock_count,
+        'recent_updates': recent_updates,
+    })
+
+
+@login_required
+def update_stock(request, product_id):
+    if request.user.role != 'supplier':
+        return redirect('product_list')
+    
+    product = get_object_or_404(Product, id=product_id, supplier=request.user)
+    
+    if request.method == 'POST':
+        new_quantity = request.POST.get('stock_quantity')
+        new_threshold = request.POST.get('low_stock_threshold')
+        
+        if new_quantity is not None:
+            product.stock_quantity = int(new_quantity)
+        if new_threshold is not None:
+            product.low_stock_threshold = int(new_threshold)
+        
+        product.update_stock_status()
+        messages.success(request, f'Stock updated for {product.name}')
+        return redirect('stock_management')
+    
+    return render(request, 'store/update_stock.html', {'product': product})
+
+
+@login_required
+def bulk_stock_update(request):
+    if request.user.role != 'supplier':
+        return redirect('product_list')
+    
+    if request.method == 'POST':
+        # Handle CSV upload for bulk stock update
+        csv_file = request.FILES.get('csv_file')
+        if csv_file:
+            try:
+                import csv
+                from io import StringIO
+                
+                # Read CSV content
+                content = csv_file.read().decode('utf-8')
+                csv_data = csv.DictReader(StringIO(content))
+                
+                updated_count = 0
+                for row in csv_data:
+                    try:
+                        product = Product.objects.get(
+                            id=row['product_id'],
+                            supplier=request.user
+                        )
+                        product.stock_quantity = int(row['stock_quantity'])
+                        if 'low_stock_threshold' in row:
+                            product.low_stock_threshold = int(row['low_stock_threshold'])
+                        product.update_stock_status()
+                        updated_count += 1
+                    except (Product.DoesNotExist, ValueError, KeyError):
+                        continue
+                
+                messages.success(request, f'Updated stock for {updated_count} products')
+            except Exception as e:
+                messages.error(request, f'Error processing CSV: {str(e)}')
+    
+    products = Product.objects.filter(supplier=request.user).order_by('name')
+    return render(request, 'store/bulk_stock_update.html', {'products': products})
+
+
+@login_required
+def checkout(request):
+    """Checkout page for creating orders from cart"""
+    if request.method == 'POST':
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            # Get cart items from session
+            cart_items = request.session.get('cart', {})
+            if not cart_items:
+                messages.error(request, 'Your cart is empty.')
+                return redirect('view_cart')
+            
+            # Calculate total
+            total_amount = 0
+            order_items = []
+            
+            for product_id, quantity in cart_items.items():
+                try:
+                    product = Product.objects.get(id=product_id)
+                    if product.is_out_of_stock():
+                        messages.error(request, f'{product.name} is out of stock.')
+                        return redirect('view_cart')
+                    
+                    if product.stock_quantity < quantity:
+                        messages.error(request, f'Only {product.stock_quantity} units of {product.name} available.')
+                        return redirect('view_cart')
+                    
+                    total_amount += product.price * quantity
+                    order_items.append({
+                        'product': product,
+                        'quantity': quantity,
+                        'price': product.price
+                    })
+                except Product.DoesNotExist:
+                    messages.error(request, f'Product with ID {product_id} not found.')
+                    return redirect('view_cart')
+            
+            # Create order
+            order = Order.objects.create(
+                customer=request.user,
+                total_amount=total_amount,
+                shipping_address=form.cleaned_data['shipping_address'],
+                phone_number=form.cleaned_data['phone_number'],
+                notes=form.cleaned_data['notes']
+            )
+            
+            # Create order items
+            for item_data in order_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item_data['product'],
+                    quantity=item_data['quantity'],
+                    price=item_data['price']
+                )
+                
+                # Update stock
+                product = item_data['product']
+                product.stock_quantity -= item_data['quantity']
+                product.update_stock_status()
+            
+            # Clear cart
+            request.session['cart'] = {}
+            
+            messages.success(request, f'Order {order.order_number} placed successfully!')
+            return redirect('order_detail', order_id=order.id)
+    else:
+        form = CheckoutForm()
+    
+    # Get cart items for display
+    cart_items = []
+    cart_data = request.session.get('cart', {})
+    total = 0
+    
+    for product_id, quantity in cart_data.items():
+        try:
+            product = Product.objects.get(id=product_id)
+            item_total = product.price * quantity
+            total += item_total
+            cart_items.append({
+                'product': product,
+                'quantity': quantity,
+                'total': item_total
+            })
+        except Product.DoesNotExist:
+            continue
+    
+    return render(request, 'store/checkout.html', {
+        'form': form,
+        'cart_items': cart_items,
+        'total': total
+    })
+
+
+@login_required
+def order_history(request):
+    """Display user's order history"""
+    orders = Order.objects.filter(customer=request.user).order_by('-created_at')
+    
+    # Pagination
+    paginator = Paginator(orders, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'store/order_history.html', {
+        'orders': page_obj
+    })
+
+
+@login_required
+def order_detail(request, order_id):
+    """Display detailed view of a specific order"""
+    order = get_object_or_404(Order, id=order_id, customer=request.user)
+    
+    return render(request, 'store/order_detail.html', {
+        'order': order
+    })
+
+
+@login_required
+def cancel_order(request, order_id):
+    """Cancel an order (only if it's still pending)"""
+    order = get_object_or_404(Order, id=order_id, customer=request.user)
+    
+    if order.status == 'pending':
+        order.status = 'cancelled'
+        order.save()
+        
+        # Restore stock
+        for item in order.items.all():
+            product = item.product
+            product.stock_quantity += item.quantity
+            product.update_stock_status()
+        
+        messages.success(request, f'Order {order.order_number} has been cancelled.')
+    else:
+        messages.error(request, 'This order cannot be cancelled.')
+    
+    return redirect('order_detail', order_id=order.id)
 
 

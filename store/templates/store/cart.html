@@ -49,10 +49,14 @@
         </table>
       </div>
 
-      <div class="mt-6 text-center">
+      <div class="mt-6 flex justify-center space-x-4">
         <a href="{% url 'product_list' %}"
-           class="inline-block bg-indigo-600 text-white px-6 py-2 rounded-full shadow hover:bg-indigo-700 transition">
+           class="inline-block bg-gray-600 text-white px-6 py-2 rounded-full shadow hover:bg-gray-700 transition">
           Continue Shopping
+        </a>
+        <a href="{% url 'checkout' %}"
+           class="inline-block bg-green-600 text-white px-6 py-2 rounded-full shadow hover:bg-green-700 transition">
+          🛒 Proceed to Checkout
         </a>
       </div>
     {% else %}

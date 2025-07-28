@@ -5,10 +5,11 @@
 {% block title %}Home | JustBuyIt{% endblock %}
 
 {% block content %}
-    <!-- Modern Hero Section -->
-    <section class="relative overflow-hidden rounded-3xl shadow-lg mx-6 mt-8 mb-12 min-h-[400px] flex items-center justify-center bg-gradient-to-r from-indigo-100 via-blue-100 to-white">
+    <!-- Hero Section with Text Left and Product Slideshow Right -->
+    <section class="relative overflow-hidden rounded-3xl shadow-lg mx-6 mt-8 mb-12 min-h-[500px] flex items-center justify-center bg-gradient-to-r from-indigo-100 via-blue-100 to-white">
       <div class="absolute inset-0 md:right-1/2 z-10 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
       <div class="flex flex-col-reverse md:flex-row items-center justify-between relative z-20 px-8 md:px-20 w-full">
+        <!-- Left Side - Text Content -->
         <div class="md:w-1/2 text-center md:text-left py-12">
           <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4 opacity-0 translate-y-8 animate-hero-pop drop-shadow-lg">
             Where Shopping Meets <br />
@@ -21,13 +22,34 @@
             Shop Now
           </a>
         </div>
+        
+        <!-- Right Side - Product Slideshow -->
         <div class="md:w-1/2 flex justify-center items-center py-8">
           <div class="relative w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-2xl overflow-hidden shadow-2xl">
-            <img src="/media/product_images/macbook.jpg" alt="Promo Laptop" class="w-full h-full object-cover scale-105" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            <!-- Product Carousel Container -->
+            <div id="heroProductCarousel" class="flex transition-transform duration-500 ease-in-out h-full">
+              {% for product in carousel_products %}
+                <div class="hero-carousel-slide min-w-full relative">
+                  <div class="relative w-full h-full overflow-hidden">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                  </div>
+                </div>
+              {% empty %}
+                <div class="hero-carousel-slide min-w-full relative">
+                  <div class="relative w-full h-full overflow-hidden bg-gradient-to-br from-indigo-200 to-blue-200 flex items-center justify-center">
+                    <div class="text-center text-gray-700">
+                      <h3 class="text-xl font-bold mb-2">Welcome to JustBuyIt</h3>
+                      <p class="text-sm">Discover amazing products!</p>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
           </div>
         </div>
       </div>
+      
       <style>
         @keyframes hero-pop {
           0% { opacity: 0; transform: translateY(2rem);}
@@ -37,6 +59,31 @@
           animation: hero-pop 1s cubic-bezier(0.4,0,0.2,1) forwards;
         }
       </style>
+    </section>
+      
+      <script>
+        // Hero Product Carousel functionality - Auto-only
+        const heroProductCarousel = document.getElementById('heroProductCarousel');
+        const heroCarouselSlides = heroProductCarousel.querySelectorAll('.hero-carousel-slide');
+        
+        let currentHeroSlide = 0;
+        const totalHeroSlides = heroCarouselSlides.length;
+        
+        function showHeroSlide(index) {
+          if (index < 0) index = totalHeroSlides - 1;
+          if (index >= totalHeroSlides) index = 0;
+          
+          currentHeroSlide = index;
+          heroProductCarousel.style.transform = `translateX(-${index * 100}%)`;
+        }
+        
+        // Auto-play hero carousel
+        if (totalHeroSlides > 1) {
+          setInterval(() => {
+            showHeroSlide(currentHeroSlide + 1);
+          }, 3000);
+        }
+      </script>
     </section>
 
 
@@ -80,33 +127,33 @@
 
     <!-- Featured Categories Section -->
     <section class="bg-white rounded-2xl shadow-md py-8 px-6 mt-10 mx-auto max-w-6xl">
-      <h2 class="text-2xl font-bold mb-6 text-gray-800">Featured Categories</h2>
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Featured Categories</h2>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-        <a href="{% url 'product_list' %}?subcategory=1">
+            <a href="{% url 'product_list' %}?subcategory=1">
           <div class="bg-gradient-to-br from-indigo-200 via-blue-100 to-purple-100 rounded-2xl p-8 flex flex-col items-center shadow-lg hover:shadow-2xl transition transform hover:scale-105 group" data-tilt data-tilt-max="15" data-tilt-speed="400">
             <svg class="w-16 h-16 mb-4 text-indigo-600 group-hover:text-indigo-800 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><rect x="8" y="18" width="8" height="2" rx="1" fill="currentColor"/></svg>
             <h3 class="text-lg font-bold text-gray-800">Phones</h3>
-          </div>
-        </a>
-        <a href="{% url 'product_list' %}?subcategory=2">
+  </div>
+</a>
+            <a href="{% url 'product_list' %}?subcategory=2">
           <div class="bg-gradient-to-br from-blue-200 via-indigo-100 to-purple-100 rounded-2xl p-8 flex flex-col items-center shadow-lg hover:shadow-2xl transition transform hover:scale-105 group" data-tilt data-tilt-max="15" data-tilt-speed="400">
             <svg class="w-16 h-16 mb-4 text-blue-600 group-hover:text-blue-800 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><rect x="8" y="18" width="8" height="2" rx="1" fill="currentColor"/></svg>
             <h3 class="text-lg font-bold text-gray-800">Laptops</h3>
-          </div>
-        </a>
-        <a href="{% url 'product_list' %}?category=3">
+  </div>
+</a>
+            <a href="{% url 'product_list' %}?category=3">
           <div class="bg-gradient-to-br from-purple-200 via-indigo-100 to-blue-100 rounded-2xl p-8 flex flex-col items-center shadow-lg hover:shadow-2xl transition transform hover:scale-105 group" data-tilt data-tilt-max="15" data-tilt-speed="400">
             <svg class="w-16 h-16 mb-4 text-purple-600 group-hover:text-purple-800 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 4v16M16 4v16"/></svg>
             <h3 class="text-lg font-bold text-gray-800">Books</h3>
-          </div>
-        </a>
-        <a href="{% url 'product_list' %}?category=2">
+            </div>
+            </a>
+            <a href="{% url 'product_list' %}?category=2">
           <div class="bg-gradient-to-br from-pink-200 via-indigo-100 to-blue-100 rounded-2xl p-8 flex flex-col items-center shadow-lg hover:shadow-2xl transition transform hover:scale-105 group" data-tilt data-tilt-max="15" data-tilt-speed="400">
             <svg class="w-16 h-16 mb-4 text-pink-500 group-hover:text-pink-700 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M4 8h16"/></svg>
             <h3 class="text-lg font-bold text-gray-800">Fashion</h3>
-          </div>
-        </a>
-      </div>
+            </div>
+            </a>
+        </div>
       <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.2/dist/vanilla-tilt.min.js"></script>
     </section>
 {% endblock %}

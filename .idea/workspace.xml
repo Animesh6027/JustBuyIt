@@ -6,12 +6,19 @@
   <component name="ChangeListManager">
     <list default="true" id="31a0263b-e283-464b-ad54-7ca170c8b2ae" name="Changes" comment="JustBuyIt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/templates/store/product_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/product_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce_site/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce_site/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/context_processors.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/context_processors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/add_product.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/add_product.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/cart.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/cart.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/templates/store/product_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/product_detail.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/store/templates/store/supplier_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/store/templates/store/supplier_dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/templatetags/store_extras.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/templatetags/store_extras.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/store/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/store/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/about.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,7 +48,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Animesh6027/JustBuyIt.git&quot;,
+    &quot;url&quot;: &quot;https://github.com/Animesh6027/justbuyit.git&quot;,
     &quot;accountId&quot;: &quot;27a1fc92-b9fb-47e6-af67-dbaf1d5dfcfb&quot;
   }
 }</component>
@@ -71,7 +78,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -165,6 +172,10 @@
       <workItem from="1752636965174" duration="8000" />
       <workItem from="1752730733204" duration="2592000" />
       <workItem from="1752737618740" duration="1085000" />
+      <workItem from="1753624913598" duration="54000" />
+      <workItem from="1753624993618" duration="3820000" />
+      <workItem from="1753697869396" duration="10000" />
+      <workItem from="1753726028065" duration="851000" />
     </task>
     <task id="LOCAL-00001" summary="JustBuyIt">
       <option name="closed" value="true" />

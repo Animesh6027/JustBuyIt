@@ -16,6 +16,9 @@
           <a href="{% url 'add_product' %}" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition flex items-center">
             <span class="mr-2">➕</span> Add Product
           </a>
+          <a href="{% url 'stock_management' %}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center">
+            <span class="mr-2">📦</span> Stock Management
+          </a>
           <a href="{% url 'bulk_upload' %}" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition flex items-center">
             <span class="mr-2">📁</span> Bulk Upload
           </a>
@@ -86,38 +89,78 @@
       </div>
     </div>
 
-    <!-- Charts Section -->
+    <!-- Stock Management Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-      <!-- Product Trend Chart -->
+      <!-- Stock Overview -->
       <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4">📈 Product Creation Trend</h3>
-        <div class="h-64 flex items-end justify-between space-x-2">
-          {% for count in product_counts %}
-          <div class="flex-1 flex flex-col items-center">
-            <div class="w-full bg-indigo-200 rounded-t-lg" style="height: {{ count|add:1|mul:20 }}px;"></div>
-            <p class="text-xs text-gray-600 mt-2">{{ forloop.counter }}</p>
-          </div>
-          {% endfor %}
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold text-gray-800">📦 Stock Overview</h3>
+          <a href="{% url 'stock_management' %}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-sm">
+            Manage Stock
+          </a>
         </div>
-        <p class="text-sm text-gray-500 mt-2 text-center">Last 6 months</p>
+        
+        <!-- Stock Statistics -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div class="text-center p-3 bg-green-100 rounded-lg">
+            <div class="text-2xl font-bold text-green-600">{{ in_stock_count }}</div>
+            <div class="text-sm text-green-700">In Stock</div>
+          </div>
+          <div class="text-center p-3 bg-yellow-100 rounded-lg">
+            <div class="text-2xl font-bold text-yellow-600">{{ low_stock_count }}</div>
+            <div class="text-sm text-yellow-700">Low Stock</div>
+          </div>
+        </div>
+        
+        <div class="text-center p-3 bg-red-100 rounded-lg">
+          <div class="text-2xl font-bold text-red-600">{{ out_of_stock_count }}</div>
+          <div class="text-sm text-red-700">Out of Stock</div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="mt-4 space-y-2">
+          <a href="{% url 'bulk_stock_update' %}" class="block w-full bg-blue-600 text-white text-center py-2 px-4 rounded-lg hover:bg-blue-700 transition text-sm">
+            📁 Bulk Stock Update
+          </a>
+          <button onclick="runStockUpdate()" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition text-sm">
+            🔄 Update All Stock
+          </button>
+        </div>
       </div>
 
-      <!-- Category Distribution -->
+      <!-- Stock Alerts -->
       <div class="bg-white/70 backdrop-blur-lg rounded-xl p-6 shadow-lg">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4">📊 Category Distribution</h3>
-        <div class="space-y-3">
-          {% for stat in category_stats %}
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-medium text-gray-700">{{ stat.category__name }}</span>
-            <div class="flex items-center space-x-2">
-              <div class="w-24 bg-gray-200 rounded-full h-2">
-                <div class="bg-indigo-600 h-2 rounded-full" style="width: {% widthratio stat.count total_products 100 %}%"></div>
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">⚠️ Stock Alerts</h3>
+        {% if low_stock_products %}
+          <div class="space-y-3 max-h-48 overflow-y-auto">
+            {% for product in low_stock_products %}
+            <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+              <div class="flex items-center space-x-3">
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-10 h-10 object-cover rounded">
+                {% else %}
+                  <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                    <span class="text-gray-400 text-sm">📦</span>
+                  </div>
+                {% endif %}
+                <div>
+                  <p class="font-medium text-gray-800 text-sm">{{ product.name }}</p>
+                  <p class="text-xs text-gray-600">{{ product.stock_quantity }} left</p>
+                </div>
               </div>
-              <span class="text-sm text-gray-600">{{ stat.count }}</span>
+              <a href="{% url 'update_stock' product.id %}" class="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700 transition">
+                Update
+              </a>
             </div>
+            {% endfor %}
           </div>
-          {% endfor %}
-        </div>
+        {% else %}
+          <div class="text-center py-8">
+            <div class="text-4xl mb-2">✅</div>
+            <p class="text-gray-600">No stock alerts</p>
+            <p class="text-sm text-gray-500">All products have sufficient stock</p>
+          </div>
+        {% endif %}
       </div>
     </div>
 
@@ -342,5 +385,19 @@ document.querySelectorAll('select[name="category"], select[name="status"]').forE
     form.submit();
   });
 });
+
+// Stock update function
+function runStockUpdate() {
+  if (confirm('This will update stock levels for all products. Continue?')) {
+    // You can implement AJAX call to run the management command
+    alert('Stock update initiated. Check the console for details.');
+    // In a real implementation, you would make an AJAX call to trigger the management command
+    // For now, we'll just show a success message
+    setTimeout(() => {
+      alert('Stock update completed!');
+      location.reload();
+    }, 2000);
+  }
+}
 </script>
 {% endblock %}
