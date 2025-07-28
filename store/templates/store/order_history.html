@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order History | JustBuyIt{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Order History</h1>
+            <p class="text-gray-600 mt-2">Track your past orders and their status</p>
+        </div>
+
+        <!-- Order Statistics -->
+        {% if order_stats.total_orders > 0 %}
+        <div class="mb-8 bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">📊 Order Statistics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="text-3xl font-bold text-blue-600">{{ order_stats.total_orders }}</div>
+                    <div class="text-sm text-gray-600 mt-1">Total Orders</div>
+                </div>
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <div class="text-3xl font-bold text-green-600">{{ order_stats.total_items_purchased }}</div>
+                    <div class="text-sm text-gray-600 mt-1">Items Purchased</div>
+                </div>
+                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <div class="text-3xl font-bold text-purple-600">₹{{ order_stats.total_spent }}</div>
+                    <div class="text-sm text-gray-600 mt-1">Total Spent</div>
+                </div>
+            </div>
+            
+            {% if order_stats.recent_orders %}
+            <div class="mt-6 pt-6 border-t">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Recent Orders</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for order in order_stats.recent_orders %}
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-900">{{ order.order_number }}</span>
+                            <span class="text-sm font-bold text-indigo-600">₹{{ order.total_amount }}</span>
+                        </div>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-xs text-gray-600">{{ order.created_at|date:"M d, Y" }}</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                {% if order.status == 'delivered' %}bg-green-100 text-green-800
+                                {% elif order.status == 'shipped' %}bg-blue-100 text-blue-800
+                                {% elif order.status == 'processing' %}bg-yellow-100 text-yellow-800
+                                {% elif order.status == 'confirmed' %}bg-purple-100 text-purple-800
+                                {% elif order.status == 'cancelled' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if orders %}
+            <div class="space-y-6">
+                {% for order in orders %}
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Order #{{ order.order_number }}</h3>
+                            <p class="text-sm text-gray-600">{{ order.created_at|date:"F d, Y" }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xl font-bold text-indigo-600">₹{{ order.total_amount }}</p>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if order.status == 'delivered' %}bg-green-100 text-green-800
+                                {% elif order.status == 'shipped' %}bg-blue-100 text-blue-800
+                                {% elif order.status == 'processing' %}bg-yellow-100 text-yellow-800
+                                {% elif order.status == 'confirmed' %}bg-purple-100 text-purple-800
+                                {% elif order.status == 'cancelled' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Order Items Preview -->
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">Items:</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="items-preview-{{ order.id }}">
+                            {% for item in order.items.all|slice:":3" %}
+                            <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                                         class="w-10 h-10 object-cover rounded">
+                                {% else %}
+                                    <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                        <span class="text-gray-400 text-xs">📦</span>
+                                    </div>
+                                {% endif %}
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900 truncate">{{ item.product.name }}</p>
+                                    <p class="text-xs text-gray-600">Qty: {{ item.quantity }}</p>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900">₹{{ item.total_price }}</p>
+                            </div>
+                            {% endfor %}
+                            {% if order.items.count > 3 %}
+                            <div class="flex items-center justify-center p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition toggle-items"
+                                 data-order-id="{{ order.id }}">
+                                <p class="text-sm text-gray-600 hover:text-gray-800">+{{ order.items.count|add:"-3" }} more items</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Hidden section for all items -->
+                        {% if order.items.count > 3 %}
+                        <div class="hidden mt-3" id="all-items-{{ order.id }}">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {% for item in order.items.all %}
+                                <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                                             class="w-10 h-10 object-cover rounded">
+                                    {% else %}
+                                        <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                            <span class="text-gray-400 text-xs">📦</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate">{{ item.product.name }}</p>
+                                        <p class="text-xs text-gray-600">Qty: {{ item.quantity }}</p>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-900">₹{{ item.total_price }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="mt-2 text-center">
+                                <button class="text-sm text-indigo-600 hover:text-indigo-800 font-medium toggle-items"
+                                        data-order-id="{{ order.id }}">
+                                    Show Less
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Order Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="font-medium text-gray-700">Shipping Address:</p>
+                            <p class="text-gray-600">{{ order.shipping_address }}</p>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-700">Phone:</p>
+                            <p class="text-gray-600">{{ order.phone_number }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center justify-between mt-4 pt-4 border-t">
+                        <a href="{% url 'order_detail' order.id %}" 
+                           class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                            View Details
+                        </a>
+                        
+                        {% if order.status == 'pending' %}
+                        <a href="{% url 'cancel_order' order.id %}" 
+                           class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                           onclick="return confirm('Are you sure you want to cancel this order?')">
+                            Cancel Order
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if orders.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <nav class="flex space-x-2">
+                    {% if orders.has_previous %}
+                        <a href="?page={{ orders.previous_page_number }}" 
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            ← Previous
+                        </a>
+                    {% endif %}
+
+                    <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg">
+                        Page {{ orders.number }} of {{ orders.paginator.num_pages }}
+                    </span>
+
+                    {% if orders.has_next %}
+                        <a href="?page={{ orders.next_page_number }}" 
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            Next →
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+            {% endif %}
+
+        {% else %}
+            <div class="text-center py-12">
+                <div class="text-6xl mb-4">📦</div>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">No orders yet</h3>
+                <p class="text-gray-500 mb-6">You haven't placed any orders yet.</p>
+                <a href="{% url 'product_list' %}" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition">
+                    Start Shopping
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners to all toggle buttons
+    document.querySelectorAll('.toggle-items').forEach(function(element) {
+        element.addEventListener('click', function() {
+            const orderId = this.getAttribute('data-order-id');
+            toggleAllItems(orderId);
+        });
+    });
+});
+
+function toggleAllItems(orderId) {
+    const previewSection = document.getElementById(`items-preview-${orderId}`);
+    const allItemsSection = document.getElementById(`all-items-${orderId}`);
+    
+    if (allItemsSection.classList.contains('hidden')) {
+        // Show all items
+        previewSection.classList.add('hidden');
+        allItemsSection.classList.remove('hidden');
+    } else {
+        // Show preview again
+        previewSection.classList.remove('hidden');
+        allItemsSection.classList.add('hidden');
+    }
+}
+</script>
+{% endblock %} 
