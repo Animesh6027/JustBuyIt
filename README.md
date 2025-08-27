@@ -32,7 +32,7 @@ Backend: Django (Python)
 
 Frontend: Tailwind CSS, Django Templates
 
-Database: SQLite (Django ORM)
+Database: PostgreSQL (Django ORM)
 
 Other: Sessions, CRUD, Responsive Design
 
